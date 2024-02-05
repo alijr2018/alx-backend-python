@@ -9,6 +9,7 @@ from unittest.mock import patch, MagicMock, PropertyMock, Mock
 from parameterized import parameterized
 from client import GithubOrgClient
 from parameterized import parameterized_class
+import fixtures
 from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
 
@@ -88,34 +89,33 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.get_patcher = patch('requests.get')
-
+        """Set up the test class"""
+        cls.get_patcher = patch("requests.get")
         cls.mock_get = cls.get_patcher.start()
 
-        def side_effect(url):
-            if 'orgs/mocked_org' in url:
-                return Mock(json=lambda: cls.org_payload)
-            elif 'orgs/mocked_org/repos' in url:
-                return Mock(json=lambda: cls.repos_payload)
-            else:
-                # Handle other cases if needed
-                return Mock()
-
-        cls.mock_get.side_effect = side_effect
+        cls.mock_get.side_effect = [
+            unittest.mock.Mock(json=lambda: cls.org_payload),
+            unittest.mock.Mock(json=lambda: cls.repos_payload),
+        ]
 
     @classmethod
     def tearDownClass(cls):
+        """Tear down the test class"""
         cls.get_patcher.stop()
 
     def test_public_repos(self):
+        """Test GithubOrgClient.public_repos method"""
         github_client = GithubOrgClient("mocked_org")
-        result = github_client.public_repos()
-        self.assertEqual(result, self.expected_repos)
+        with patch.object(github_client, "_public_repos_url", return_value="mocked_repos_url"):
+            repos = github_client.public_repos()
+            self.assertEqual(repos, self.expected_repos)
 
     def test_public_repos_with_license(self):
+        """Test GithubOrgClient.public_repos method with license argument"""
         github_client = GithubOrgClient("mocked_org")
-        result = github_client.public_repos(license='Apache-2.0')
-        self.assertEqual(result, self.apache2_repos)
+        with patch.object(github_client, "_public_repos_url", return_value="mocked_repos_url"):
+            repos = github_client.public_repos(license="apache-2.0")
+            self.assertEqual(repos, self.apache2_repos)
 
 
 
