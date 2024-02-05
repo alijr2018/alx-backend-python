@@ -25,7 +25,8 @@ class TestAccessNestedMap(unittest.TestCase):
         ({}, ("a",), "'a'"),
         ({"a": 1}, ("a", "b"), "'b'"),
     ])
-    def test_access_nested_map_exception(self, nested_map, path, expected_exception):
+    def test_access_nested_map_exception(self,
+                                         nested_map, path, expected_exception):
         with self.assertRaises(KeyError) as context:
             utils.access_nested_map(nested_map, path)
         self.assertIn(expected_exception, str(context.exception))
@@ -60,7 +61,8 @@ class TestMemoize(unittest.TestCase):
             return self.a_method()
 
     def test_memoize(self):
-        with patch.object(self.TestClass, 'a_method', autospec=True) as mock_method:
+        with patch.object(self.TestClass,
+                          'a_method', autospec=True) as mock_method:
             instance = self.TestClass()
 
             mock_method.return_value = 42
