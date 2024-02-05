@@ -5,7 +5,7 @@ test_client.py
 
 import unittest
 from typing import Dict
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, PropertyMock
 from parameterized import parameterized
 from client import GithubOrgClient
 
@@ -32,6 +32,17 @@ class TestGithubOrgClient(unittest.TestCase):
         mocked_get_json.assert_called_once_with(
             "https://api.github.com/orgs/{}".format(org)
         )
+
+    @patch("client.GithubOrgClient.org", new_callable=PropertyMock)
+    def test_public_repos_url(self, mock_org):
+        known_payload = {'login': 'mocked_org',
+                         'repos_url': 'https://api.github.com/orgs/mocked_org/repos'}
+        mock_org.return_value = known_payload
+
+        gh_org_client = GithubOrgClient("mocked_org")
+
+        expected_url = 'https://api.github.com/orgs/mocked_org/repos'
+        self.assertEqual(gh_org_client._public_repos_url, expected_url)
 
 
 if __name__ == "__main__":
