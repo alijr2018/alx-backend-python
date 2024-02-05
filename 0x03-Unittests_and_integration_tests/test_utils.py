@@ -50,6 +50,9 @@ class TestGetJson(unittest.TestCase):
 
 
 class TestMemoize(unittest.TestCase):
+    """
+    Implement the TestMemoize(unittest.TestCase) class with a test_memoize method.
+    """
 
     class TestClass:
 
