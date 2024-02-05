@@ -51,10 +51,16 @@ class TestGetJson(unittest.TestCase):
 
 class TestMemoize(unittest.TestCase):
     """
-    Implement the TestMemoize(unittest.TestCase) class with a test_memoize method.
+    Implement the TestMemoize(unittest.TestCase),
+    class with a test_memoize method.
     """
 
     class TestClass:
+        """
+         Test that when calling a_property twice,
+         the correct result is returned but a_method is only,
+         called once using assert_called_once.
+        """
 
         def a_method(self):
             return 42
