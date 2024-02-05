@@ -35,8 +35,11 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @patch("client.GithubOrgClient.org", new_callable=PropertyMock)
     def test_public_repos_url(self, mock_org):
-        known_payload = {'login': 'mocked_org',
-                         'repos_url': 'https://api.github.com/orgs/mocked_org/repos'}
+        known_payload = {
+            'login': 'mocked_org',
+            'repos_url': f'https://api.github.com/orgs/mocked_org/repos'
+            }
+
         mock_org.return_value = known_payload
 
         gh_org_client = GithubOrgClient("mocked_org")
@@ -49,8 +52,9 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch("client.GithubOrgClient._public_repos_url",
            new_callable=PropertyMock)
     def test_public_repos(self, mock_repos_url, mock_get_json):
-        mock_repos_url.return_value = "https://api.github.com/orgs/mocked_org/repos"
-
+        mock_repos_url.return_value = (
+            "https://api.github.com/orgs/mocked_org/repos"
+            )
         gh_org_client = GithubOrgClient("mocked_org")
 
         repos = gh_org_client.public_repos()
