@@ -5,9 +5,12 @@ test_client.py
 
 import unittest
 from typing import Dict
-from unittest.mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, MagicMock, PropertyMock, Mock
 from parameterized import parameterized
 from client import GithubOrgClient
+from parameterized import parameterized_class
+from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
+
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -78,6 +81,42 @@ class TestGithubOrgClient(unittest.TestCase):
         github_client = GithubOrgClient("mocked_org")
         result = github_client.has_license(repo, license_key)
         self.assertEqual(result, expected_result)
+    
+    @parameterized_class(('org_payload', 'repos_payload', 'expected_repos', 'apache2_repos'), [
+    (org_payload, repos_payload, expected_repos, apache2_repos),
+    ])
+
+    @classmethod
+    def setUpClass(cls):
+        cls.get_patcher = patch('requests.get')
+
+        cls.mock_get = cls.get_patcher.start()
+
+        def side_effect(url):
+            if 'orgs/mocked_org' in url:
+                return Mock(json=lambda: cls.org_payload)
+            elif 'orgs/mocked_org/repos' in url:
+                return Mock(json=lambda: cls.repos_payload)
+            else:
+                # Handle other cases if needed
+                return Mock()
+
+        cls.mock_get.side_effect = side_effect
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        github_client = GithubOrgClient("mocked_org")
+        result = github_client.public_repos()
+        self.assertEqual(result, self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        github_client = GithubOrgClient("mocked_org")
+        result = github_client.public_repos(license='Apache-2.0')
+        self.assertEqual(result, self.apache2_repos)
+
 
 
 if __name__ == "__main__":
