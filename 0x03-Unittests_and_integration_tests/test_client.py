@@ -13,7 +13,6 @@ import fixtures
 from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
 
-
 class TestGithubOrgClient(unittest.TestCase):
     """
     TestGithubOrgClient class.
@@ -82,14 +81,17 @@ class TestGithubOrgClient(unittest.TestCase):
         github_client = GithubOrgClient("mocked_org")
         result = github_client.has_license(repo, license_key)
         self.assertEqual(result, expected_result)
-    
-    @parameterized_class(('org_payload', 'repos_payload', 'expected_repos', 'apache2_repos'), [
-    (org_payload, repos_payload, expected_repos, apache2_repos),
-    ])
 
+    @parameterized_class(('org_payload',
+                          'repos_payload',
+                          'expected_repos', 'apache2_repos'), [
+        (org_payload, repos_payload, expected_repos, apache2_repos),
+    ])
     @classmethod
     def setUpClass(cls):
-        """Set up the test class"""
+        """
+        Set up the test class
+        """
         cls.get_patcher = patch("requests.get")
         cls.mock_get = cls.get_patcher.start()
 
@@ -100,23 +102,32 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Tear down the test class"""
+        """
+        Tear down the test class
+        """
         cls.get_patcher.stop()
 
     def test_public_repos(self):
-        """Test GithubOrgClient.public_repos method"""
+        """
+        Testing GithubOrgClient.public_repos method
+        """
         github_client = GithubOrgClient("mocked_org")
-        with patch.object(github_client, "_public_repos_url", return_value="mocked_repos_url"):
+        with patch.object(github_client,
+                          "_public_repos_url",
+                          return_value="mocked_repos_url"):
             repos = github_client.public_repos()
             self.assertEqual(repos, self.expected_repos)
 
     def test_public_repos_with_license(self):
-        """Test GithubOrgClient.public_repos method with license argument"""
+        """
+        Testing GithubOrgClient.public_repos method
+        """
         github_client = GithubOrgClient("mocked_org")
-        with patch.object(github_client, "_public_repos_url", return_value="mocked_repos_url"):
+        with patch.object(github_client,
+                          "_public_repos_url",
+                          return_value="mocked_repos_url"):
             repos = github_client.public_repos(license="apache-2.0")
             self.assertEqual(repos, self.apache2_repos)
-
 
 
 if __name__ == "__main__":
