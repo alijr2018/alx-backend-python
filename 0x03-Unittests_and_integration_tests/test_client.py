@@ -6,7 +6,7 @@ test_client.py
 import unittest
 from typing import Dict
 from unittest.mock import patch, MagicMock, PropertyMock, Mock
-from parameterized import parameterized
+import parameterized
 from client import GithubOrgClient
 from parameterized import parameterized_class
 import fixtures
